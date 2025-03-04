@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/kruylimeng/Documents/dev/data-science-class/AI%20G6/Homework/ai-assignment-midterm-01/modeling/mlruns/501614866384423924/a0647560e05a49e1bb461d07dbc4378d/artifacts
+end_time: 1741078937369
+entry_point_name: ''
+experiment_id: '501614866384423924'
+lifecycle_stage: active
+run_id: a0647560e05a49e1bb461d07dbc4378d
+run_name: ANN_10_Epochs
+run_uuid: a0647560e05a49e1bb461d07dbc4378d
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1741078929877
+status: 3
+tags: []
+user_id: kruylimeng

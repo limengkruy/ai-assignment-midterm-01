@@ -1,0 +1,20 @@
+artifact_path: ANN_25_Epochs
+flavors:
+  python_function:
+    data: data
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.tensorflow
+    python_version: 3.11.5
+  tensorflow:
+    code: null
+    data: data
+    keras_version: 2.18.0
+    model_type: keras
+    save_format: tf
+mlflow_version: 2.20.2
+model_size_bytes: 74582
+model_uuid: d20872753bb74bdeae1ecc53576471f8
+run_id: ea4368b972b2460e84c368e034bddc22
+utc_time_created: '2025-03-04 09:02:21.813333'

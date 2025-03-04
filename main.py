@@ -2,13 +2,23 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 import pandas as pd
 import joblib
+import tensorflow as tf
 
 # Initialize FastAPI app
 app = FastAPI()
 
+# Disable GPU (Optional)
+tf.config.set_visible_devices([], 'GPU')  # Disable default GPU setting
+
+physical_devices = tf.config.list_physical_devices('GPU')
+if physical_devices:
+    tf.config.experimental.set_memory_growth(physical_devices[0], True)
+    print("GPU is now enabled with Metal API")
+    
 # Load your pre-trained Logistic Regression model
 try:
-    model = joblib.load("modeling/model/model_logistic.pkl")
+    logi = joblib.load("modeling/model/training/LogisticRegression.pkl")
+    ann = tf.keras.models.load_model("modeling/model/training/ANN_10_Epochs.keras")
 except Exception as e:
     raise RuntimeError("Failed to load the logistic model. Check the file path and try again.") from e
 
@@ -87,9 +97,50 @@ def predict(data: CustomerData):
         # (Optional) Debug prints
         print("Processed data columns:", processed_data.columns.tolist())
         print("Processed data shape:", processed_data.shape)
-        
-        # Make prediction using the logistic regression model
-        prediction = model.predict(processed_data)
+        print("Processed data:", processed_data.values)
+        # Make prediction
+        _response = {}
+        prediction = logi.predict(processed_data.values)
+        print("Logistic prediction:", prediction)
+        result = "Yes" if prediction[0] == 1 else "No"
+        _response['prediction-logistic'] = result
+        prediction = (ann.predict(processed_data.values) > 0.5).astype(int)
+        print("ANN prediction:", prediction)
+        result = "Yes" if prediction[0][0] == 1 else "No"
+        _response['prediction-ann'] = result
+        return _response
+    
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Prediction failed: {e}")
+
+@app.post("/predict-logi/")
+def predict_logi(data: CustomerData):
+    try:
+        # Preprocess the incoming data
+        processed_data = preprocess_data(data)
+        # (Optional) Debug prints
+        print("Processed data columns:", processed_data.columns.tolist())
+        print("Processed data shape:", processed_data.shape)
+        print("Processed data:", processed_data.values)
+        # Make prediction
+        prediction = logi.predict(processed_data.values)
+        result = "Yes" if prediction[0] == 1 else "No"
+        return {"prediction": result}
+    
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Prediction failed: {e}")
+    
+@app.post("/predict-ann/")
+def predict_ann(data: CustomerData):
+    try:
+        # Preprocess the incoming data
+        processed_data = preprocess_data(data)
+        # (Optional) Debug prints
+        print("Processed data columns:", processed_data.columns.tolist())
+        print("Processed data shape:", processed_data.shape)
+        print("Processed data:", processed_data.values)
+        # Make prediction
+        prediction = (ann.predict(processed_data.values) > 0.5).astype(int)
         result = "Yes" if prediction[0] == 1 else "No"
         return {"prediction": result}
     
