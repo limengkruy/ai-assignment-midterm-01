@@ -30,8 +30,8 @@ Follow these simple steps to get the project up and running locally:
 Start by cloning the repository to your local machine:
 
 ```bash
-git clone https://github.com/limengkruy/fast-api-h02.git
-cd fast-api-h02
+git clone https://github.com/limengkruy/ai-assignment-midterm-01.git
+cd ai-assignment-midterm-01
 ```
 
 ### ⚡ 2. Install the required dependencies:
@@ -101,5 +101,12 @@ uvicorn main:app --reload
     }
     ```
 
-### 7. Result Comparation
-![alt text](img/result.png)
+
+### 7. Result Comparision
+![alt text](image/01-mlflow-compare-metrics.png)
+
+![alt text](image/02-mlflow-compare-top3-accuracy.png)
+
+
+### 8. Result FastAPI
+![alt text](image/03-result-fast-api.gif)

@@ -105,17 +105,8 @@ def get_model_metrics(X_test, y_test, y_pred, model, model_name):
     mse = mean_squared_error(y_test, y_pred)
     r2 = r2_score(y_test, y_pred)
     
-    # Extract n_estimators and max_depth if they exist
-    n_estimators = None
-    max_depth = None
-
-    if hasattr(model, "n_estimators"):  # For RandomForest, XGBoost, etc.
-        n_estimators = model.n_estimators
-    if hasattr(model, "max_depth"):  # For DecisionTree, RandomForest, XGBoost, etc.
-        max_depth = model.max_depth
-
     # Compile all metrics
-    return {
+    metrics = {
         "model": model_name,
         "confusion_matrix_tn": TN,
         "confusion_matrix_fp": FP,
@@ -131,10 +122,18 @@ def get_model_metrics(X_test, y_test, y_pred, model, model_name):
         "roc_auc_score": roc_auc,
         "accuracy": accuracy,
         "mse": mse,
-        "r2_score": r2,
-        "n_estimators": n_estimators,
-        "max_depth": max_depth
+        "r2_score": r2
     }
+
+    if hasattr(model, "n_estimators"):  # For RandomForest, XGBoost, etc.
+        metrics["n_estimators"] = model.n_estimators
+    if hasattr(model, "max_depth"):  # For DecisionTree, RandomForest, XGBoost, etc.
+        metrics["max_depth"] = model.max_depth
+    # Log Learning Rate and n_estimators if available
+    if hasattr(model, 'learning_rate'):
+        metrics["learning_rate"] = model.learning_rate
+
+    return metrics
 
 # ==============================
 # 🤖 4. Model Training & MLflow Logging
@@ -181,12 +180,6 @@ for model_name, model in models.items():
 
         # Log Metrics (Excluding model name)
         mlflow.log_metrics({k: v for k, v in eval_metrics.items() if k != "model"})
-        
-        # Log Learning Rate and n_estimators if available
-        if hasattr(model, 'learning_rate'):
-            mlflow.log_param("learning_rate", model.learning_rate if hasattr(model, 'learning_rate') else "N/A")
-        if hasattr(model, 'n_estimators'):
-            mlflow.log_param("n_estimators", model.n_estimators if hasattr(model, 'n_estimators') else "N/A")
 
         # Log Model with Signature
         signature = infer_signature(X_train, model.predict(X_train))
@@ -226,6 +219,9 @@ def train_ann(epochs, model_name):
         # Evaluate
         eval_metrics = get_model_metrics(X_test, y_test, y_pred, model_ann, model_name)
 
+        # Log Model Type
+        mlflow.log_param("model_type", model_name)
+        
         # Log Params and Metrics
         mlflow.log_param("epochs", epochs)
         mlflow.log_metrics({k: v for k, v in eval_metrics.items() if k != "model"})
