@@ -49,7 +49,7 @@ python train.py
 
 ### 📊 4. MLflow Experiment Tracking
 
-#### API Endpoints
+#### MLflow Command
 Start MLflow UI:
 
 ```bash
@@ -110,3 +110,6 @@ uvicorn main:app --reload
 
 ### 8. Result FastAPI
 ![alt text](image/03-result-fast-api.gif)
+
+### 9. Presentation
+[See Presentation on Google Slides](https://docs.google.com/presentation/d/1sUeIx7PEJGxAEzLBQ_ddtX754laaDt8t2l2EKBu9cC8/edit?usp=sharing)
